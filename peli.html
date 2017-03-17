@@ -1,0 +1,164 @@
+<!doctype html> <!-- -*- mode: web; -*- -->
+<!-- Peli is a simple game released under the MIT license.
+
+Copyright (c) 2017 Lasse Kantola
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<html>
+    <head>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Peli</title>
+	<style type="text/css">
+	 html, body {
+	     overflow:hidden;
+	 }
+	 div.game {
+	     position: fixed;
+	     width:80vmin;
+	     height:80vmin;
+	     /* border: solid 1vmin; */
+	     left: 50%;
+	     top: 50%;
+	     margin-left: -40vmin;
+	     margin-top: -45vmin;
+	 }
+	 .button {
+	     position: absolute;
+	     height: 20%;
+	     top: 10%;
+	     text-align: center;
+	 }
+	 button#b1 {
+	     left: 10%;
+	     width: 20%;
+	     font-size: 10vmin;
+	 }
+	 button#b2 {
+	     left: 40%;
+	     width: 50%;
+	     font-size: 5vmin;
+	 }
+	 div.die {
+	     font-size: 20vmin;
+	     text-align: center;
+	     position: absolute;
+	     top: 50%;
+	     left: 30%;
+	     height: 30vmin;
+	     width: 30vmin;
+	     margin-top: -15vmin;
+	     margin-left: -15vmin;
+	     /* border: solid; */
+	 }
+	 div#d2 {
+	     left: 60%;
+	 }
+	 div.score {
+	     text-align: center;
+	     font-size: 10vmin;
+	     position: absolute;
+	     bottom: 10%;
+	     width: 30%;
+	     height: 15vmin;
+	     border-width: 1vmin;
+	 }
+	 div#round {
+	     border-style: dotted;
+	     border-color: red;
+	     left: 10%;
+	 }
+	 div#score {
+	     border-style: inset;
+	     border-color: green;
+	     left: 50%;
+	 }
+	</style>
+    </head>
+    <body>
+	<div class="game">
+	    <button class="button" id="b1" onclick="roll()">🎲</button>
+	    <button class="button" id="b2" onclick="stop()">🐈🐈🐈🐈🐈</button>
+	    <div class="score" id="score">0</div>
+	    <div class="score" id="round">0</div>
+	    <div class="die" id="d1">⚅</div>
+	    <div class="die" id="d2">⚅</div>
+	</div>
+	<script>
+	 var score = 0;
+	 var round = 0;
+	 var a_lives = 10
+	 var lives = a_lives;
+	 var a_dices = ["❌", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+	 var a_live = "🐕 ";
+	 var a_goal = "🐈 ";
+	 function update() {
+	     document.getElementById("score").innerHTML = score;
+	     document.getElementById("round").innerHTML = round;
+	     if (lives > 0) {
+		 document.getElementById("b2").innerHTML = Array(lives+1).join(a_live);
+		 document.getElementById("b1").disabled = false
+		 document.getElementById("b2").disabled = (round == 0);
+	     } else {
+		 document.getElementById("b2").innerHTML = a_goal + score;
+		 document.getElementById("b2").disabled = false;
+		 document.getElementById("b1").disabled = true;
+	     }
+	 }
+	 function roll() {
+	     var d1 = Math.floor(7 * Math.random());
+	     var d2 = Math.floor(7 * Math.random());
+	     document.getElementById("d1").innerHTML = a_dices[d1];
+	     document.getElementById("d2").innerHTML = a_dices[d2];
+	     if (d1 == 0 && d2 == 0) {
+		 score = 0;
+		 round = 0;
+		 stop();
+		 return;
+	     } else if (d1 == 0 || d2 == 0) {
+		 round = 0;
+		 stop();
+		 return;
+	     } else if (d1 == d2) {
+		 round += d1 * d2;
+	     } else {
+		 round += d1 + d2;
+	     }
+	     update();
+	 }
+	 function restart() {
+	     score = 0;
+	     round = 0;
+	     lives = a_lives;
+	 }
+	 function stop() {
+	     if (lives > 0) {
+		 score += round;
+		 round = 0;
+		 lives -= 1;
+	     } else {
+		 restart();
+	     }
+	     update();
+	 }
+	 update()
+	</script>
+    </body>
+</html>
